@@ -1,0 +1,16 @@
+[package]
+name = "horizon-mod-sendas"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.95"
+license = "Apache-2.0"
+publish = false
+description = "Sendas: tres sendas (Guerrero, Mago y Arquero) para Horizon, como mod nativo."
+
+[lib]
+# Este mismo archivo es el módulo que horizon-mixins agrega al juego.
+path = "mixins/sendas/runtime.rs"
+
+[workspace]
+members = ["tools/audit"]
+resolver = "2"

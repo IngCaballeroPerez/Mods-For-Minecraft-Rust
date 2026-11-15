@@ -1,0 +1,50 @@
+[mod]
+id = "sendas"
+version = "0.1.0"
+priority = 100
+
+# El Horizon en que se probó (Nightly 2026-11-08). Solo usa los puntos de
+# enganche nativos (hooks 163 en compatibility.json), así que el launcher lo
+# construye en cualquier Horizon que los tenga.
+[compatibility]
+horizon_revision = "fdc87aecdbd116bf1e08adcd062fcbaea8c2e2ca"
+
+# Las reglas del mod, agregadas al juego como `game::sendas`.
+[[module]]
+id = "runtime"
+file = "crates/horizon-client/src/game.rs"
+name = "sendas"
+source = "runtime.rs"
+
+# La fila de Sendas en Opciones > Mods.
+[[injection]]
+id = "list"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_mods"
+helper = "list.rs"
+bindings = [
+  { name = "mods", ty = "&mut Vec<crate::game::native_hooks::NativeMod>", value = "&mut *mods" },
+]
+
+# El comando /senda, para que el chat lo complete.
+[[injection]]
+id = "register"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_register_commands"
+helper = "register.rs"
+bindings = [
+  { name = "commands", ty = "&mut Vec<crate::game::native_server::NativeCommand>", value = "&mut *commands" },
+]
+
+# Lo que hace /senda cuando un jugador lo escribe.
+[[injection]]
+id = "command"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_perform_command"
+helper = "command.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "player", ty = "&crate::game::native_server::NativeServerPlayer", value = "player" },
+  { name = "command", ty = "&str", value = "command" },
+  { name = "ran", ty = "&mut bool", value = "&mut *ran" },
+]
